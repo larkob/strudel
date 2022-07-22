@@ -749,12 +749,18 @@ const generic_params = [
 
 // TODO: slice / splice https://www.youtube.com/watch?v=hKhPdO0RKDQ&list=PL2lW1zNIIwj3bDkh-Y3LUGDuRcoUigoDs&index=13
 
-const _name = (name, ...pats) => sequence(...pats).withValue((x) => ({ [name]: x }));
+const _name = (name, ...pats) => sequence(...pats).withValue((x) => {
+  if (x != '-') return ({ [name]: x })
+  else return ({})
+});
 
 const _setter = (func, name) =>
   function (...pats) {
     if (!pats.length) {
-      return this.fmap((value) => ({ [name]: value }));
+      return this.fmap((value) => {
+        if (value != '-') return ({ [name]: value });
+        else return ({})
+      })
     }
     return this.set(func(...pats));
   };

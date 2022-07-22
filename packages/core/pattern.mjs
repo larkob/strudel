@@ -227,6 +227,31 @@ export class Pattern {
     return this._filterValues((val) => val != undefined);
   }
 
+  _noDuplicates(obj) {
+    return obj.reduce((unique, o ) => {
+      if(!unique.some(obj => obj.whole === o.whole && obj.value === o.value)) {
+        unique.push(o);
+      }
+      return unique;
+    },[])
+  }
+
+  _filterDuplicates() {
+    return new Pattern((state) => {
+      console.log(this.query(state))
+      return this.query(state).reduce((unique, o ) => {
+        if(!unique.some(obj => obj.whole === o.whole && obj.value === o.value)) {
+          unique.push(o);
+        }
+        return unique;
+      },[])
+    })
+  }
+
+  _removeDuplicates() {
+    return this._filterDuplicates();
+  }
+
   /**
    * Returns a new pattern, with all haps without onsets filtered out. A hap
    * with an onset is one with a `whole` timespan that begins at the same time
@@ -1127,6 +1152,8 @@ function _composeOp(a, b, func) {
         if (what === 'keepif') {
           result = result._removeUndefineds();
         }
+        // remove duplicates
+        //result = result._removeDuplicates();
         return result;
       };
       if (how === 'Squeeze') {

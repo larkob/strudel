@@ -10,6 +10,7 @@ import { Pattern, mod } from '@strudel.cycles/core';
 // transpose note inside scale by offset steps
 // function scaleOffset(scale: string, offset: number, note: string) {
 function scaleOffset(scale, offset, note) {
+  if (note === '-') return note;
   let [tonic, scaleName] = Scale.tokenize(scale);
   let { notes } = Scale.get(`${tonic} ${scaleName}`);
   notes = notes.map((note) => Note.get(note).pc); // use only pc!

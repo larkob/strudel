@@ -20,9 +20,9 @@ const options = {
 export default defineConfig({
   plugins: [react(), mdx(options)],
   build: {
-    outDir: '../out/tutorial',
+    outDir: '../out/guide',
   },
-  base: '/strudel/tutorial/',
+  base: '',
 });
 
 // jsxRuntime:'classic' to prevent "jsxDevRuntime.exports.jsxDEV is not a function" for dev mode

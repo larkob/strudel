@@ -5,7 +5,7 @@ This program is free software: you can redistribute it and/or modify it under th
 */
 
 // returns true if the given string is a note
-export const isNote = (name) => /^[a-gA-G][#b]*[0-9]$/.test(name);
+export const isNote = (name) => /^[a-gA-G][#b]*[0-9]|-$/.test(name);
 export const tokenizeNote = (note) => {
   if (typeof note !== 'string') {
     return [];
@@ -19,6 +19,7 @@ export const tokenizeNote = (note) => {
 
 // turns the given note into its midi number representation
 export const toMidi = (note) => {
+  if (note == '-') return 0
   const [pc, acc, oct] = tokenizeNote(note);
   if (!pc) {
     throw new Error('not a note: "' + note + '"');
@@ -80,6 +81,8 @@ export const compose = (...funcs) => pipe(...funcs.reverse());
 export const removeUndefineds = (xs) => xs.filter((x) => x != undefined);
 
 export const flatten = (arr) => [].concat(...arr);
+
+export const flattenDeep = (arr) => Array.isArray(arr) ? arr.reduce( (a, b) => a.concat(flattenDeep(b)) , []) : [arr];
 
 export const id = (a) => a;
 export const constant = (a, b) => a;
