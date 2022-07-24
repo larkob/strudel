@@ -124,7 +124,7 @@ Strudel can work like that as well, but you'll quickly learn how to move beyond 
 Here's a simple example of making beats with Strudel that should look somewhat familiar:
 
 <MiniRepl tune={
-`await gist('larkob/4c933946b3e2f870b48d149ba11e8be7/raw/ec4b4477644bfbf7c93898a0a3ac842cec4e6ed6/strudel_helpers.js')
+`await gist('larkob/4c933946b3e2f870b48d149ba11e8be7/raw/bb25988d73d9f6fed74be6a883e1ebe5dbd4a140/strudel_helpers.js')
 samples({
   bass_drum: 'clubkick/2.wav',
   snare: '808sd/SD0010.WAV',
@@ -169,7 +169,7 @@ The sample player in Strudel comes pre-loaded with the following sounds:
 You select a sound variation by appending `:` with its number to the sound name (or by using the `n` function):
 
 <MiniRepl tune={
-`s("hh:1")` // same as s("hh") .n(1) .out()
+`s("hh:1").out()`
 } />
 
 You can also load your own sound samples using the `samples` function:
@@ -260,12 +260,15 @@ some tips to get you oriented for Pop music:
 
 <MiniRepl tune={
 `stack(
-  s("oh").out() .struct("x!8"),
-  s("sd").out() .struct("~ x ~ x"),
-  s("bd").out() .struct("x ~ x ~"),
+  sound("oh") .struct("x!8"),
+  sound("sd") .struct("~ x ~ x"),
+  sound("bd") .struct("x ~ x ~"),
 )
 .bpm(100, '4/4')`
 } />
+
+I'm using the `sound` helper function as a replacement for `s("__").out()`, so the code becomes easier to read 
+(and I have less to type).
 
 Admittedly, this is a very boring drum pattern. One of the reasons it's boring is because it's repeating a 
 single bar with no variation. Your drum pattern should span across at least two bars with variation 
@@ -279,16 +282,16 @@ single bar with no variation. Your drum pattern should span across at least two 
 }
 //
 stack(
-  s("sd").out() .struct("~ x ~ x"),
-  s("bd").out() .struct(bassdrum.pt03), // change this
+  sound("sd") .struct("~ x ~ x"),
+  sound("bd") .struct(bassdrum.pt03), // change this
 )
 .bpm(100, '4/4')`
 } />
 
 The code has been restructed to make it easier for you to switch the pattern to be played.
  
-I've used `cat` for the first pattern even though it isn't needed, but oftentimes it's better to be 
-consistent, plus it makes for better readability when the rhythmical structures are aligned. 
+I've used `cat` for the first pattern even though it isn't needed, but oftentimes it's better to be consistent, 
+plus it makes for better readability when the rhythmical structures are aligned. 
 
 Using different amount of elements per bar makes it sometimes hard to read a pattern. In general, you want each 
 individual pattern to use a consistent amount of elements (such as 4, 8 or 16). There's a way to "zoom in" to 
@@ -308,8 +311,8 @@ That's probably easier to illustrate than to explain. Here's how patterns can be
 }
 //
 stack(
-  s("sd").out() .struct("~ x ~ x"),
-  s("bd").out() .struct(bassdrum.pt04), // change this
+  sound("sd") .struct("~ x ~ x"),
+  sound("bd") .struct(bassdrum.pt04), // change this
 )
 .bpm(100, '4/4')`
 } />
@@ -345,9 +348,9 @@ Try out the following hi-hat patterns to see their effect:
 }
 //
 stack(
-  s("oh").out() .struct(open_hihat.pt14), // change this
-  s("sd").out() .struct("~ x ~ x"),
-  s("bd").out() .struct("x ~ x ~"),
+  sound("oh") .struct(open_hihat.pt14), // change this
+  sound("sd") .struct("~ x ~ x"),
+  sound("bd") .struct("x ~ x ~"),
 )
 .bpm(100, '4/4')`
 } />
@@ -365,10 +368,10 @@ as we don't have it in our pre-loaded set of samples.
 }
 //
 stack(
-  s("hh").out() .n(1) .struct(pattern.pt17.half),
-  s("oh").out() .struct(pattern.pt17.open),
-  s("sd").out() .struct("~ x ~ x"),
-  s("bd").out() .struct("x ~ x ~", "x ~ [x x] [~ x ~ ~]"),
+  sound("hh") .n(1) .struct(pattern.pt17.half),
+  sound("oh") .struct(pattern.pt17.open),
+  sound("sd") .struct("~ x ~ x"),
+  sound("bd") .struct("x ~ x ~", "x ~ [x x] [~ x ~ ~]"),
 )
 .bpm(100, '4/4')`
 } />
@@ -381,7 +384,7 @@ soon as you close the hi-hat. You can use the `clip(true)` function to ensure th
 next beat. Note that rests will also cause the sound to clip. 
 
 <MiniRepl tune={
-`s("oh hh ~!14").out() .clip(true)
+`sound("oh hh ~!14") .clip(true)
 .bpm(120, '4/4')`
 } />
 
@@ -389,7 +392,7 @@ Here are some drum patterns that use a variety of bass drum patterns and hi-hat 
 individual closed, half and open hi-hat patterns, so you can compare the two kinds of pattern notations.
 
 <MiniRepl tune={
-`samples({
+`samplesound({
   ch: 'hh/Hat Closed-01.wav',
   hh: 'hh/Hat Closed-02.wav',
   oh: 'oh/Hhopen1.wav',
@@ -425,9 +428,9 @@ var pattern = {
 var current = pattern.pt19 // change this
 //
 stack(
-  s(current.hhat) .clip(true),
-  s("sd").out() .struct("~ x ~ x"),
-  s("bd").out() .struct(current.bass),
+  sound("current.hhat") .clip(true),
+  sound("sd") .struct("~ x ~ x"),
+  sound("bd") .struct(current.bass),
 )
 .bpm(100, '4/4')`
 } />
@@ -493,10 +496,10 @@ sound (or the overall output) use `hush` instead.
 
 <MiniRepl tune={
 `stack(
-  s("oh").out() .velocity(0.8) .struct("x!8"),
-  s("sd").out() .velocity(1.0) .struct("~ x ~ x"),
-  s("bd").out() .velocity(0.8) .struct("x ~ x ~"),
-  s("cp") .velocity(0.8) .struct("~ x ~ x").out() .hush(),
+  sound("oh") .velocity(0.8) .struct("x!8"),
+  sound("sd") .velocity(1.0) .struct("~ x ~ x"),
+  sound("bd") .velocity(0.8) .struct("x ~ x ~"),
+  sound("cp") .velocity(0.8) .struct("~ x ~ x") .hush(),
 )
 .bpm(100, '4/4') .gain(0.9)`
 } />
@@ -510,8 +513,8 @@ illustrate how the patterns are truely identical):
 
 <MiniRepl tune={
 `stack(
-  s("sd").out() .struct("~ x ~ <[x ~] [x x]>"),
-  s("sd") .struct( cat("~ x ~ x", "~ x ~ [x x]").out() ) .gain(0),
+  sound("sd") .struct("~ x ~ <[x ~] [x x]>"),
+  sound("sd") .struct( cat("~ x ~ x", "~ x ~ [x x]") ) .gain(0),
 )
 .bpm(100, '4/4')`
 } />
@@ -525,8 +528,8 @@ the standard pattern 3 times followed once by the new pattern:
 
 <MiniRepl tune={
 `stack(
-  s("sd").out() .struct("~ x ~ <[x ~]!3 [x x]>"),
-  s("sd") .struct( cat("~ x ~ x", "~ x ~ [x x]").out() ) .gain(0),
+  sound("sd") .struct("~ x ~ <[x ~]!3 [x x]>"),
+  sound("sd") .struct( cat("~ x ~ x", "~ x ~ [x x]") ) .gain(0),
 )
 .bpm(100, '4/4')`
 } />
@@ -537,8 +540,8 @@ it's still hard to understand the rhythmic structure:
 
 <MiniRepl tune={
 `stack(
-  s("sd").out() .struct("~ x ~ <[x ~]!3 [x x]>"),
-  s("bd").out() .struct( cat("[x x] [~ x] [x ~ ~ x] [~ x]", 
+  sound("sd") .struct("~ x ~ <[x ~]!3 [x x]>"),
+  sound("bd") .struct( cat("[x x] [~ x] [x ~ ~ x] [~ x]", 
                      "<[[~ x ~ x] [~ x] [x x] [~ x]]!3 [[~ x] [x x] [~ ~] [x ~]]>")),
 )
 .bpm(100, '4/4')`
@@ -559,10 +562,10 @@ Here's an example for an alternative way to handle large variations:
 var current = pattern.pt30
 //
 stack(
-  s("hh:1").out() .struct( flatcat(current.half) ),
-  s("oh").out()   .struct( flatcat(current.open) ),
-  s("sd").out()   .struct("~ x ~ x"),
-  s("bd").out()   .struct( flatcat(current.bass) ),
+  sound("hh:1") .struct( flatcat(current.half) ),
+  sound("oh")   .struct( flatcat(current.open) ),
+  sound("sd")   .struct("~ x ~ x"),
+  sound("bd")   .struct( flatcat(current.bass) ),
 )
 .bpm(100, '4/4')`
 } />
@@ -582,7 +585,7 @@ to the `every` function, so it can be used as the basis for further modification
 
 <MiniRepl tune={
 `stack(
-  s("sd") .gain(0.7) .struct("[x x x x] [x x x x] [x x] [x x]") .every( 2, $ => $.gain("0.7 0.8 0.9 1").out() ),
+  sound("sd") .struct("[x x x x] [x x x x] [x x] [x x]") .gain(0.7) .every( 2, $ => $.gain("0.7 0.8 0.9 1") ),
 )
 .bpm(100, '4/4')`
 } />
@@ -593,7 +596,7 @@ edge, each giving a distinctive sound. To demonstrate these two sounds, we need 
 online sample bank:
 
 <MiniRepl tune={
-`samples({
+`samplesound({
   ride_cup:  '209/209900_3797507-lq.mp3',
   ride_edge: '209/209895_3797507-lq.mp3',
 }, 'https://cdn.freesound.org/previews/')
@@ -616,20 +619,20 @@ var pattern = {
 var current = pattern.pt31 // change this
 //
 var ride = {
-  edge: ($) => $ .s("ride_edge").out() .velocity(0.9) .clip(true),
-  cup:  ($) => $ .s("ride_cup").out()  .velocity(1.5) .clip(true),
+  edge: ($) => $ .sound("ride_edge") .velocity(0.9) .clip(true),
+  cup:  ($) => $ .sound("ride_cup")  .velocity(1.5) .clip(true),
 }
 stack(
-  s("__").out() .struct(flatcat(current.ride)) .apply( $=> ride.cup($) ) .every( 2, $=> ride.edge($) ),
-  s("sd").out() .struct("~ x ~ x"),
-  s("bd").out() .struct(flatcat(current.bass)),
+  sound("__") .struct(flatcat(current.ride)) .apply( $=> ride.cup($) ) .every( 2, $=> ride.edge($) ),
+  sound("sd") .struct("~ x ~ x"),
+  sound("bd") .struct(flatcat(current.bass)),
 )
 .bpm(100, '4/4')`
 } />
 
-Note how each Ride sound has been given its own definition with individual velocity settings. The `s("__")` is 
-just a placeholder without any sound. The `apply` function is very similar to the `every` function, but doesn't 
-need a condition: It simply applies a function to what's been defined before (and in this case it's applying 
+Note how each Ride sound has been given its own definition with individual velocity settings. The `sound("__")` is 
+just a placeholder without any actual sound. The `apply` function is very similar to the `every` function, but 
+doesn't need a condition: It simply applies a function to what's been defined before (and in this case it's applying 
 a new sound definition, overriding the placeholder).
 
 There are lots of other cymbals as well, such as Crash, China or Splash cymbals. These are often used to 
@@ -692,26 +695,26 @@ var pattern = {
 }
 //
 var current = pattern.pt34 // change this
-function part(sound, fallback = [silence, silence]) { return flatcat(current[sound] || fallback) }
+function part(instrument, fallback = [silence, silence]) { return flatcat(current[instrument] || fallback) }
 //
 stack(
-  s("bd").out() .velocity(0.8) .struct(part('bass')),
-  s("sd").out() .velocity(1.0) .struct(part('snare',["~ x ~ x","~ x ~ x"])),
-  s(part('hhat')) .velocity(0.8) .clip(true),
-  s("ride_cup").out() .velocity(0.8) .clip(true) .struct(part('ride')),
-  s("ht").out() .velocity(0.5) .speed(1.2) .struct(part('high1')),
-  s("ht").out() .velocity(0.5) .speed(1.0) .struct(part('high2')),
-  s("mt").out() .velocity(0.5) .speed(1.2) .struct(part('mid')),
-  s("lt").out() .velocity(0.5) .speed(1.0) .struct(part('low')),
+  sound("bd") .velocity(0.8) .struct(part('bass')),
+  sound("sd") .velocity(1.0) .struct(part('snare',["~ x ~ x","~ x ~ x"])),
+  sound(part('hhat')) .velocity(0.8) .clip(true),
+  sound("ride_cup") .velocity(0.8) .clip(true) .struct(part('ride')),
+  sound("ht") .velocity(0.5) .speed(1.2) .struct(part('high1')),
+  sound("ht") .velocity(0.5) .speed(1.0) .struct(part('high2')),
+  sound("mt") .velocity(0.5) .speed(1.2) .struct(part('mid')),
+  sound("lt") .velocity(0.5) .speed(1.0) .struct(part('low')),
 )
 .bpm(100, '4/4')`
 } />
 
 I've created a `part` function to help me pick just the sound part of the pattern that I'm interested in. 
 It applies `flatcat` as before, but also uses a fallback pattern in case the pattern doesn't have this sound 
-defined. All except for the Snare then simply play two bars of `silence`, which is a pre-defined pattern in 
-Strudel. You'll notice that I'm using `silence` for empty bars as well, so I can ensure that all patterns 
-have exactly two bars length.
+defined. All instruments except for the Snare then simply play two bars of `silence`, which is a pre-defined 
+pattern in Strudel. You'll notice that I'm using `silence` for empty bars as well, so I can ensure that all 
+patterns have exactly two bars length.
 
 I've used the `speed` function to control the playback speed of the Tom samples, slightly raising the pitch for 
 some of them, so I have four disctinct Tom sounds despite just three samples. 
@@ -721,9 +724,9 @@ this hi-hat sound can be played together with Toms, but the drummer couldn't pos
 their hands are already busy.
 
 Pattern #39 is the first (and only) pattern with 32nds beats. I've used double square brackets `[[ ]]` to make 
-them stand out visually, as the additional brackets have no actual effect. 
+them stand out visually (the additional brackets have no actual effect). 
 
-Finally, now that we have so many patterns to chose from, it makes sense to put them in a nice arrangement. 
+Now that we have so many patterns to chose from, it makes sense to put them in a nice arrangement. 
 Let's say our song has a long Verse of 16 bars and a Chorus of 8 bars. For the Verse, we'll use patterns 
 29-33-29-34-20-36-20-37 and for the Chorus 31-38-31-39. If you compare them closely, you'll find that the 
 patterns are quite similar in each section, and each section ends with a pattern that uses fast fills.
@@ -799,17 +802,17 @@ var _ = pattern
 var verse = [_.pt29, _.pt33, _.pt29, _.pt34, _.pt20, _.pt36, _.pt20, _.pt37]
 var chorus = [_.pt31, _.pt38, _.pt31, _.pt39]
 var song = flattenDeep([verse, chorus])
-function part(sound, fallback = [silence, silence]) { return flatcat(song.map($ => $[sound] || fallback)) }
+function part(instrument, fallback = [silence, silence]) { return flatcat(song.map($ => $[instrument] || fallback)) }
 //
 stack(
-  s("bd").out() .velocity(0.8) .struct(part('bass')),
-  s("sd").out() .velocity(1.0) .struct(part('snare',["~ x ~ x","~ x ~ x"])),
-  s(part('hhat')) .velocity(0.8) .clip(true),
-  s("ride_cup").out() .velocity(0.8) .clip(true) .struct(part('ride')),
-  s("ht").out() .velocity(0.5) .speed(1.2) .struct(part('high1')),
-  s("ht").out() .velocity(0.5) .speed(1.0) .struct(part('high2')),
-  s("mt").out() .velocity(0.5) .speed(1.2) .struct(part('mid')),
-  s("lt").out() .velocity(0.5) .speed(1.0) .struct(part('low')),
+  sound("bd") .velocity(0.8) .struct(part('bass')),
+  sound("sd") .velocity(1.0) .struct(part('snare',["~ x ~ x","~ x ~ x"])),
+  sound(part('hhat')) .velocity(0.8) .clip(true),
+  sound("ride_cup") .velocity(0.8) .clip(true) .struct(part('ride')),
+  sound("ht") .velocity(0.5) .speed(1.2) .struct(part('high1')),
+  sound("ht") .velocity(0.5) .speed(1.0) .struct(part('high2')),
+  sound("mt") .velocity(0.5) .speed(1.2) .struct(part('mid')),
+  sound("lt") .velocity(0.5) .speed(1.0) .struct(part('low')),
 )
 .bpm(100, '4/4')`
 } />
@@ -825,7 +828,7 @@ That's all for part 1. Stay tuned for the next part where I'll talk about melody
 Melodic instruments work just like drums. Let's start simple by playing the built-in piano sound:
 
 <MiniRepl tune={
-`s("piano").out() .note("c1")`
+`sound("piano") .note("c1")`
 } />
 
 The "c1" note is quite low, because Strudel uses the 128 note range from MIDI, which spans about 10 octaves, 
@@ -839,7 +842,7 @@ the note "c4" is note 60 in MIDI:
 
 <MiniRepl tune={
 `stack(
-  s("piano").out() .note("c4").out() .gain(0.5),
+  sound("piano") .note("c4") .gain(0.5),
   "60"
 )`
 } />
@@ -850,8 +853,8 @@ instruments:
 
 <MiniRepl tune={
 `stack(
-  s("bd").out() .n(4) .struct("x x"),
-  s("piano") .note("c1").out() .struct("x x")
+  sound("bd") .n(4) .struct("x x"),
+  sound("piano") .note("c1") .struct("x x")
 )
 .gain(0.5)`
 } />
@@ -861,18 +864,18 @@ It simply means that the piano samples have been mapped to named notes in the "c
 bass drum samples are just ordered by number. Here's how the sample mapping is done:
 
 <MiniRepl tune={
-`samples({
+`samplesound({
   bd: ['bd/Bassdrum-01.wav','bd/Bassdrum-02.wav','bd/Bassdrum-03.wav']
 },'EmuSP12/')
-samples({
+samplesound({
   piano: {
     c4: 'C4v8.mp3',
     c5: 'C5v8.mp3',
   }
 }, 'piano/')
 stack(
-  s("bd").out() .n(3) .struct("x x"),
-  s("piano") .note("c4").out() .struct("x x")
+  sound("bd") .n(3) .struct("x x"),
+  sound("piano") .note("c4") .struct("x x")
 )
 .gain(0.5)`
 } />
@@ -880,7 +883,7 @@ stack(
 Back to playing piano. Let's play a simple melody:
 
 <MiniRepl tune={`
-s("piano") .note("a2 b2 c3 d3 e3 f3 g3@2") .struct("x x x x x x x@2").out() 
+sound("piano") .note("a2 b2 c3 d3 e3 f3 g3@2") .struct("x x x x x x x@2") 
 .gain(0.5)`
 } />
 
@@ -889,7 +892,7 @@ play melodies by starting with a melodic pattern and then applying the `note` fu
 like this:
 
 <MiniRepl tune={`
-"a2 b2 c3 d3 e3 f3 g3@2" .note() .s("piano")
+"a2 b2 c3 d3 e3 f3 g3@2" .note() .sound("piano")
 .gain(0.5)`
 } />
 
@@ -897,7 +900,7 @@ That's a bit unusual. Does this work for drums as well? Actually, yes. And it ha
 "percussive" instruments as "melodic" instruments.
 
 <MiniRepl tune={
-"a2 b2 c3 d3 e3 f3 g3@2" .note() .s("bd:3")
+"a2 b2 c3 d3 e3 f3 g3@2" .note() .sound("bd:3")
 .clip(true) .gain(0.3)
 } />
 
@@ -908,7 +911,7 @@ I've created some helper functions for playing melodic as well as percussive ins
 it more intuitive to play sample-based instruments. 
 
 <MiniRepl tune={
-`await gist('larkob/4c933946b3e2f870b48d149ba11e8be7/raw/ec4b4477644bfbf7c93898a0a3ac842cec4e6ed6/strudel_helpers.js')
+`await gist('larkob/4c933946b3e2f870b48d149ba11e8be7/raw/bb25988d73d9f6fed74be6a883e1ebe5dbd4a140/strudel_helpers.js')
 stack(
   sound("bd:3")  .play("a2 b2 c3 d3 e3 f3 g3@2")
   sound("sd")    .play("~ x ~ x"),
@@ -917,7 +920,7 @@ stack(
 } />
 
 The `await gist` command tells the browser to wait until the script is loaded from the so-called "gist" on github. 
-If you're interested in what's going on in the script, look [here](https://gist.githubusercontent.com/larkob/4c933946b3e2f870b48d149ba11e8be7/raw/ec4b4477644bfbf7c93898a0a3ac842cec4e6ed6/strudel_helpers.js)
+If you're interested in what's going on in the script, look [here](https://gist.githubusercontent.com/larkob/4c933946b3e2f870b48d149ba11e8be7/raw/bb25988d73d9f6fed74be6a883e1ebe5dbd4a140/strudel_helpers.js)
 You can use `sound` to pick an instrument and `play` to play either notes or beats.
 
 There's another way to write melodies, using numbers again, but instead of MIDI numbers, you are referencing notes in 
