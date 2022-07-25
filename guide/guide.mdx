@@ -81,9 +81,8 @@ is actually from C0 to B0. Luckily for us, Strudel can also interpret MIDI note 
 ```
 
 Now Strudel plays four notes in the pattern, each at a quarter duration because multiple events in a pattern 
-divide the cycle into multiple parts of equal duration. A pattern cannot exceed the cycle duration, so the more events 
-you put in a pattern, the more they get squeezed together. In other words, a cycle has a pre-defined duration (of 
-1 second) and you can change the perceived speed by squeezing more or less events into it.
+divide the cycle into multiple parts of equal duration. The total duration of items in a pattern cannot exceed 
+the cycle duration of 1 second, so the more events you put in a pattern, the more they get squeezed together. 
 
 You can also put moments of silence ("rests") in a pattern using the `~` symbol like this:
 
@@ -114,6 +113,18 @@ The resulting pattern is two c2 events with halved duration, followed by a d2. T
 because of the silence `~`. Note how the rest on the left remains unaffected by either `note` or `struct` because 
 there simply is nothing there that can be affected.
 
+A pattern can span multiple cycles, each of which lasts the cycle length of 1 second. This is typically done by 
+con*cat*enating patterns, but there are other functions as well that can create multi-cycle patterns.
+
+```
+cat("c2 d2 ~ ~","c3 d3 ~ ~") // ['0/1 -> 1/4: c2', '1/4 -> 1/2: d2'], ['0/1 -> 1/4: c3', '1/4 -> 1/2: d3']
+```
+
+Last but not least, you can `stack` patterns together, so they appear as one.
+
+```
+stack("c2 d2 ~ ~","c3 d3 ~ ~") // ['0/1 -> 1/4: c2', '0/1 -> 1/4: c3', '1/4 -> 1/2: d2', '1/4 -> 1/2: d3']
+```
 
 ## Beats & Percussive Samples
 
